@@ -1,28 +1,24 @@
 open Lwt
+open Lwt_io
 
 let alert = ref "Default Alert"
 
-(*
-let clientIdx = ref 0
+type client = {
+    oChan : Lwt_io.output Lwt_io.channel;
+    iChan : Lwt_io.input Lwt_io.channel
+}
 
-let clients = Array.make 999
+let clientList = ref []
 
-let addClient oc = 
-    Array.set clients !clientIdx oc;
-    clientIdx := !clientIdx + 1;
-    0
+let addClient client = clientList := [client] @ !clientList 
 
-let sendToAll msg =
-    for i = 0 to Array.length clients - 1 do
-        Lwt_io.write_line clients.(i) msg
-    done;;
-    msg
- *)
- 
+let rec sendToAll alert =
+    List.iter (fun client -> Lwt_io.write_line client.oChan alert; ()) !clientList
+
 let handle_message msg =
     match msg with
     | "getAlert" -> !alert
-    | "setAlert"  -> alert := "New Alert"; "New Alert has been set."
+    | "setAlert"  -> alert := "New Alert"; sendToAll "HAHAHAHA"; "New Alert has been set."
     | a      -> print_string "Message Received: "; print_endline a; "Unknown command"
 
 let rec handle_connection ic oc () =
@@ -38,8 +34,10 @@ let accept_connection conn =
     let fd, _ = conn in
     let ic = Lwt_io.of_fd Lwt_io.Input fd in
     let oc = Lwt_io.of_fd Lwt_io.Output fd in
+    let client = { iChan = ic; oChan = oc } in
+
     Lwt.on_failure (handle_connection ic oc ()) (fun e -> Logs.err (fun m -> m "%s" (Printexc.to_string e) ));
-    (* addClient oc; *)
+    addClient client;
     Logs_lwt.info (fun m -> m "New Alert Client Connected") >>= return
  
 let create_socket () =

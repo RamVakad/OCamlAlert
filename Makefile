@@ -1,4 +1,4 @@
-all: server client
+all: server client admin
 
 server: server.ml
 	ocamlfind ocamlopt -package lwt,lwt.unix,logs,logs.lwt -linkpkg -o server ./server.ml
@@ -7,6 +7,10 @@ server: server.ml
 client: client.ml
 	ocamlfind ocamlopt -package unix,threads -linkpkg -thread -o client ./client.ml
 	-rm -r client.o client.cmx client.cmi
+
+admin: admin.ml
+	ocamlfind ocamlopt -package unix,threads -linkpkg -thread -o admin ./admin.ml
+	-rm -r admin.o admin.cmx admin.cmi
 
 clean:
 	-rm -r client server _build *.o *.cmo *.cmx *.mli *.cmi
