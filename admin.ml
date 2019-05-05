@@ -18,5 +18,5 @@ let _ =
     Unix.connect sock (ADDR_INET (Unix.inet_addr_of_string "127.0.0.1", 8484));
     Printf.printf "Connected to 127.0.0.1:8484...\n";
     alert sock;
-    Printf.printf "Closing the connection.\n!";
+    Printf.printf "Closing the connection.";
     Unix.close sock
