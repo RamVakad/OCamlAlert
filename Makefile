@@ -1,4 +1,4 @@
-all: server client admin newserver
+all: server client admin
 
 newserver: newserver.ml
 	ocamlfind ocamlopt -package lwt,lwt.unix,logs,logs.lwt -linkpkg -o newserver ./newserver.ml
