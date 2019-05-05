@@ -86,8 +86,10 @@ let rec handshakeHandler client clientList () =
                                 if (secret = admin_SECRET) then (
                                     print_endline "server: [INFO] Admin Handshake Successful";
                                     Lwt.on_failure (adminHandler client clientList ()) (fun e -> Logs.err (fun m -> m "%s" (Printexc.to_string e) ));
+                                    Lwt_io.write_line client.oChan "OK" >>= return;
                                     return ()
                                 ) else (
+                                    Lwt_io.write_line client.oChan "FAIL" >>= return;
                                     Logs_lwt.info (fun m -> m "Invalid Admin Password Provided. Connection Refused.") >>= return
                                 )
                             )

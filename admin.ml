@@ -5,6 +5,7 @@ open Thread
 let addLineBreak str = str ^ "\n"
 
 let alert sock pass msg =
+    let inputStream = (Unix.in_channel_of_descr sock) in
     let outputStream = (Unix.out_channel_of_descr sock) in
     Printf.fprintf outputStream "iAmAdmin\n";
     Pervasives.flush outputStream;
@@ -12,6 +13,11 @@ let alert sock pass msg =
     Pervasives.flush outputStream;
     Printf.fprintf outputStream "%s" (addLineBreak msg);
     Pervasives.flush outputStream;
+    Thread.delay 2.0;
+    let msg = (Pervasives.input_line inputStream) in (
+      if (msg = "OK") then (Pervasives.print_endline "The alert has been successfully pushed to all clients.";) else (Pervasives.print_endline "Invalid Password.";);
+    );
+    
     ()
 
 let getHead ls =
@@ -35,5 +41,5 @@ let _ =
     Unix.connect sock (ADDR_INET (Unix.inet_addr_of_string "127.0.0.1", 8484));
     Printf.printf "Connected to 127.0.0.1:8484...\n";
     alert sock pass msg;
-    Printf.printf "Closing the connection.";
+    Printf.printf "Closing the connection.\n";
     Unix.close sock
