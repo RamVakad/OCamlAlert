@@ -1,9 +1,5 @@
 all: server client admin
 
-newserver: newserver.ml
-	ocamlfind ocamlopt -package lwt,lwt.unix,logs,logs.lwt -linkpkg -o newserver ./newserver.ml
-	-rm -r newserver.o newserver.cmx newserver.cmi
-
 server: server.ml
 	ocamlfind ocamlopt -package lwt,lwt.unix,logs,logs.lwt -linkpkg -o server ./server.ml
 	-rm -r server.o server.cmx server.cmi
